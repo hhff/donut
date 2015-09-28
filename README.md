@@ -1,28 +1,92 @@
-# Donut
+# :doughnut: Donut
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/donut`. To experiment with that code, run `bin/console` for an interactive prompt.
+Donut is a minimal command line tool for orchestrating tooling across "mono-repo" projects in Testing, CI and Development.  If your app repo looks like this...
 
-TODO: Delete this and the text above, and describe your gem
+```
+-- ROOT
+    |-- api
+    |-- frontend
+    |-- backend
+    |-- core
+```
+... Donut will make your life easier.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'donut'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install donut
 
 ## Usage
 
-TODO: Write usage instructions here
+All Donut commands are run from the project root.
+
+```
+cd path/to/my/project
+```
+
+#### Generate your Donutfile.rb
+Donut requires you to describe your repo inside a `Donutfile.rb`, located at the root of the project.
+
+```
+donut init
+```
+
+#### Customize your Donutfile.rb
+Use `install`, `serve`, `test` and `deploy` to describe your project.
+
+```
+class JavascriptApp < Donut::App
+  def install
+    run 'npm install'
+    run 'bower install'
+  end
+end
+
+class EmberAddon < JavascriptApp
+  def test
+    run 'ember test'
+  end
+end
+
+class EmberApp < EmberAddon
+  def serve
+    run 'ember serve'
+  end
+end
+
+class RailsApp < Donut::App
+  def install
+    bundle_exec 'bundle install'
+    bundle_exec 'rake db:migrate'
+    bundle_exec 'rake db:seed'
+  end
+  
+  def serve
+    bundle_exec 'rails s'
+  end
+  
+  def test
+    bundle_exec 'rspec'
+  end
+  
+  def deploy
+    run 'git push heroku master'
+  end
+  
+  private
+  bundle_exec(cmd)
+    run "bundle exec #{cmd}"
+  end
+end
+
+DONUTS = {
+  api:        RailsApp.new('api'),
+  admin_ui:   JavascriptApp.new('backend'),
+  frontend:   EmberApp.new('frontend'),
+  core_addon: EmberAddon.new('core')
+}
+```
+
+Now simply run `donut [COMMAND]` and watch that command propogate across your whole project!
 
 ## Development
 
