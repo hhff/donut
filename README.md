@@ -1,5 +1,7 @@
 # :doughnut: Donut
 
+[![Build Status](https://travis-ci.org/hhff/donut.svg)](https://travis-ci.org/hhff/donut)
+
 Donut is a minimal command line tool for orchestrating tooling across "mono-repo" projects in Testing, CI and Development.  If your app repo looks like this...
 
 ```
